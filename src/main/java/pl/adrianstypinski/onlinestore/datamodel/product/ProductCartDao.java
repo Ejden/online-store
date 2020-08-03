@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public interface ProductCartDao extends CrudRepository<ProductCart, UUID> {
     @Query("SELECT p FROM ProductCart p INNER JOIN Basket b ON p.basket.privateId = b.privateId WHERE b.user.userId = :userId")
     Iterable<ProductCart> findAllByUserId(long userId);

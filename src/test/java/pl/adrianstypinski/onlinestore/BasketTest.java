@@ -67,19 +67,4 @@ public class BasketTest {
 
         Assertions.assertEquals(3263, basket.getToPay());
     }
-
-    @Test
-    void shouldReturnBasketDtoFromBasket() {
-        Basket.BasketDto basketDto = basket.toBasketDto();
-    }
-
-    @Test
-    void shouldRemoveOneProductItemFromBasket() {
-
-    }
-
-    @Test
-    void shouldRemoveOneQuantityOfProduct() {
-
-    }
 }

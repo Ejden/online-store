@@ -51,6 +51,7 @@ public class ProductCart {
         return totalPrice;
     }
 
+    @SuppressWarnings("unused")
     public void removeProduct(int quantity) {
         if (quantity > 0) {
             this.quantity = (this.quantity - quantity > 0) ? quantity : 0;

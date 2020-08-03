@@ -1,4 +1,4 @@
-package pl.adrianstypinski.onlinestore.Services;
+package pl.adrianstypinski.onlinestore.services;
 
 import pl.adrianstypinski.onlinestore.datamodel.basket.Basket;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductCart;

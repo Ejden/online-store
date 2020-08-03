@@ -1,4 +1,4 @@
-package DataGenerator;
+package datagenerator;
 
 import com.github.javafaker.Faker;
 import pl.adrianstypinski.onlinestore.datamodel.basket.Basket;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Generator {
-    private static Faker faker = new Faker(Locale.UK);
+    private static final Faker faker = new Faker(Locale.UK);
 
     public static Iterable<User> createFakeUsers(int quantity) {
         List<User> users = new ArrayList<>();
@@ -41,7 +41,7 @@ public class Generator {
         return users;
     }
 
-    public static Iterable<ProductItem> createProductItems(int quantity, Iterable<User> sellers) throws Exception {
+    public static Iterable<ProductItem> createProductItems(Iterable<User> sellers) {
         List<ProductItem> items = new ArrayList<>();
 
         sellers.forEach(seller -> {

@@ -2,10 +2,10 @@ package pl.adrianstypinski.onlinestore.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import pl.adrianstypinski.onlinestore.datamodel.basket.Basket;
-import pl.adrianstypinski.onlinestore.Services.DataService;
+import pl.adrianstypinski.onlinestore.services.DataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pl.adrianstypinski.onlinestore.Services.ShoppingService;
+import pl.adrianstypinski.onlinestore.services.ShoppingService;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductItem;
 import pl.adrianstypinski.onlinestore.datamodel.user.User;
 
@@ -42,14 +42,13 @@ public class ApiAdminController {
         return dataService.addProductItemToSeller(productItem, userId);
     }
 
-    @PostMapping("products/{productId}/buy")
-    public Basket.BasketDto buy(@PathVariable long productId, @RequestBody Basket basket) {
+    @PostMapping("products/buy")
+    public Basket.BasketDto buy(@RequestBody Basket basket) {
         return shoppingService.buyItemsFromBasket(basket);
     }
 
-    @PostMapping("users/{userId}/products/{productId}")
-    public Iterable<ProductItem.ProductItemDto> addOnStock(@PathVariable long userId, @PathVariable long productId,
-                                                           @RequestBody List<ProductItem> productItemsToAdd) {
+    @PostMapping("users/products/")
+    public Iterable<ProductItem.ProductItemDto> addOnStock(@RequestBody List<ProductItem> productItemsToAdd) {
         return dataService.addToStock(productItemsToAdd);
     }
 }

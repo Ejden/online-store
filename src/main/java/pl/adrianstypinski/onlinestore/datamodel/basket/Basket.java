@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
+@Data
 public class Basket {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -83,6 +84,7 @@ public class Basket {
         addToPay(productCartToAdd.getProductItem(), productCartToAdd.getQuantity());
     }
 
+    @SuppressWarnings("unused")
     public void removeProductFromBasket(ProductCart productCart) {
         this.productCarts.removeIf(p -> p.getProductItem().getPrivateId().equals(productCart.getPrivateId()));
         calculateToPay();
@@ -105,6 +107,7 @@ public class Basket {
         return productCarts.size();
     }
 
+    @SuppressWarnings("unused")
     public boolean isEmpty() {
         return productCarts.isEmpty();
     }

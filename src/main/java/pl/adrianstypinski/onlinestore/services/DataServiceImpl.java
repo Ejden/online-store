@@ -1,8 +1,7 @@
-package pl.adrianstypinski.onlinestore.Services;
+package pl.adrianstypinski.onlinestore.services;
 
-import DataGenerator.Generator;
+import datagenerator.Generator;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.collection.internal.PersistentList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -163,7 +162,7 @@ public class DataServiceImpl implements DataService {
             addUsers(users);
 
             for (int i = 0; i < 10; i++) {
-                Iterable<ProductItem> productItems = Generator.createProductItems(1000, users);
+                Iterable<ProductItem> productItems = Generator.createProductItems(users);
                 addProductItems(productItems);
 
             }

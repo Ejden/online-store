@@ -2,7 +2,7 @@ package pl.adrianstypinski.onlinestore.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pl.adrianstypinski.onlinestore.Services.ShoppingService;
+import pl.adrianstypinski.onlinestore.services.ShoppingService;
 import pl.adrianstypinski.onlinestore.datamodel.basket.Basket;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductCart;
 
