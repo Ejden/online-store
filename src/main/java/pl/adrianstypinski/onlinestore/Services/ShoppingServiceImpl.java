@@ -2,28 +2,47 @@ package pl.adrianstypinski.onlinestore.Services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.adrianstypinski.onlinestore.Basket;
+import pl.adrianstypinski.onlinestore.datamodel.basket.Basket;
+import pl.adrianstypinski.onlinestore.datamodel.basket.BasketDao;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductCart;
+import pl.adrianstypinski.onlinestore.datamodel.product.ProductCartDao;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductItem;
+import pl.adrianstypinski.onlinestore.datamodel.product.ProductItemDao;
 import pl.adrianstypinski.onlinestore.datamodel.user.User;
+import pl.adrianstypinski.onlinestore.datamodel.user.UserDao;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@Transactional
 @Service
 public class ShoppingServiceImpl implements ShoppingService {
-    private DataService dataService;
+    private final DataService dataService;
+    private final BasketDao basketDao;
+    private final ProductItemDao productItemDao;
+    private final ProductCartDao productCartDao;
+    private final UserDao userDao;
 
     @Autowired
-    public ShoppingServiceImpl(DataService dataService) {
+    public ShoppingServiceImpl(DataService dataService,
+                               BasketDao basketDao,
+                               UserDao userDao,
+                               ProductItemDao productItemDao,
+                               ProductCartDao productCartDao) {
+        this.productItemDao = productItemDao;
+        this.productCartDao = productCartDao;
+        this.userDao = userDao;
+        this.basketDao = basketDao;
         this.dataService = dataService;
     }
 
     @Override
-    public Basket.BasketDto buyItemsFromBasket(long userId, Basket basket) {
+    public Basket.BasketDto buyItemsFromBasket(Basket basket) {
         Basket.BasketDto boughtDto = null;
-        Optional<User> user = dataService.getUserByUserId(userId);
+        Optional<User> user = dataService.getUserByUserId(basket.getUser().getUserId());
 
         if (user.isPresent()) {
             User u = user.get();
@@ -48,5 +67,72 @@ public class ShoppingServiceImpl implements ShoppingService {
         }
 
         return boughtDto;
+    }
+
+    @Override
+    public Optional<Basket> getBasketByUserId(long userId) {
+        return basketDao.findByUser_UserId(userId);
+    }
+
+    @Override
+    public Optional<Basket> addProductToBasket(long userId, ProductCart productCart) {
+        // Searching if user exists
+        Optional<User> user = userDao.findByUserId(userId);
+        Optional<Basket> basket = basketDao.findByUser_UserId(userId);
+
+        // If user exist than we're doing the rest
+        if (user.isPresent()) {
+
+            // If user don't have a basket we're creating new one
+            if (basket.isEmpty()) {
+                basket = Optional.of(new Basket());
+            }
+
+            // Getting productItem from database
+            Optional<ProductItem> productItem = productItemDao
+                    .findByProductId(productCart.getProductItem().getProductId());
+
+            // If product item exists in database
+            if (productItem.isPresent()) {
+                // Creating new productCart to use data from database instead of data from user
+                productCart = new ProductCart(productItem.get(), productCart.getQuantity());
+
+                // Checking if item is already in basket
+                Optional<ProductCart> duplicate = basket.get().getProductCarts()
+                        .stream()
+                        .filter(p -> p.getProductItem().getPrivateId().equals(productItem.get().getPrivateId()))
+                        .findFirst();
+
+                if (duplicate.isPresent()) {
+                    // Item already exist in basket
+                    duplicate.get().updateQuantity(productCart.getQuantity());
+                    basket.get().calculateToPay();
+                } else {
+                    // Item doesn't exists in basket
+                    basket.get().addProductToBasket(productCart);
+                }
+
+                // Finally save changes to database
+                productCartDao.save(productCart);
+                basketDao.save(basket.get());
+            }
+        }
+
+        return basket;
+    }
+
+    @Override
+    public Optional<Basket> deleteProductFromBasket(long userId, ProductCart productCartFromUser) {
+        // Getting basket from database
+        Optional<Basket> basket = basketDao.findByUser_UserId(userId);
+
+        basket.ifPresent(b -> {
+            b.removeProductFromBasket(productCartFromUser.getProductItem().getProductId());
+
+            productCartDao.removeByProductItem_ProductId(productCartFromUser.getProductItem().getProductId());
+            basketDao.save(basket.get());
+        });
+
+        return basket;
     }
 }

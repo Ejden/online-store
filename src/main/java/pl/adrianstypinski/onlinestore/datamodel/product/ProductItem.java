@@ -42,6 +42,7 @@ public class ProductItem {
         ProductItemDto productItemDto = new ProductItemDto();
 
         productItemDto.setProductId(productId);
+        productItemDto.setSellerId(seller.getUserId());
         productItemDto.setName(name);
         productItemDto.setDescription(description);
         productItemDto.setPrice(price);
@@ -71,11 +72,10 @@ public class ProductItem {
     @Data
     public static class ProductItemDto {
         private long productId;
+        private long sellerId;
         private String name;
         private String description;
         private int onStock;
         private int price;
     }
-
-
 }

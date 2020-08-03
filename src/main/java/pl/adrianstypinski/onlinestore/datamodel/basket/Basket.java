@@ -1,19 +1,29 @@
-package pl.adrianstypinski.onlinestore;
+package pl.adrianstypinski.onlinestore.datamodel.basket;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.NaturalId;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductCart;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductItem;
 import pl.adrianstypinski.onlinestore.datamodel.user.User;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import javax.persistence.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Entity
 public class Basket {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID privateId;
+
+    @NaturalId
+    private long basketId;
+
+    @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private User user;
+    @OneToMany(mappedBy = "basket", fetch = FetchType.EAGER)
     private List<ProductCart> productCarts;
     private int toPay;
 
@@ -42,10 +52,18 @@ public class Basket {
 
     public void setProductCarts(List<ProductCart> productCarts) {
         this.productCarts = productCarts;
+        productCarts.forEach(productCart -> productCart.setBasket(this));
         calculateToPay();
     }
 
-    private void calculateToPay() {
+    public void addProducts(List<ProductCart> productCarts) {
+        this.productCarts.addAll(productCarts);
+        productCarts.forEach(productCart -> productCart.setBasket(this));
+        calculateToPay();
+    }
+
+    public void calculateToPay() {
+        toPay = 0;
         productCarts.forEach(productCart -> toPay += productCart.getTotalPrice());
     }
 
@@ -54,6 +72,8 @@ public class Basket {
                 .filter(prodCart -> prodCart.getProductItem().getProductId()  == productCartToAdd.getProductItem().getProductId())
                 .findFirst();
 
+        productCartToAdd.setBasket(this);
+
         if (productCart.isPresent()) {
             productCart.get().addProduct(productCartToAdd.getQuantity());
         } else {
@@ -61,6 +81,16 @@ public class Basket {
         }
 
         addToPay(productCartToAdd.getProductItem(), productCartToAdd.getQuantity());
+    }
+
+    public void removeProductFromBasket(ProductCart productCart) {
+        this.productCarts.removeIf(p -> p.getProductItem().getPrivateId().equals(productCart.getPrivateId()));
+        calculateToPay();
+    }
+
+    public void removeProductFromBasket(long productId) {
+        this.productCarts.removeIf(p -> p.getProductItem().getProductId() == productId);
+        calculateToPay();
     }
 
     private void addToPay(ProductItem productItem, int quantity) {
@@ -75,6 +105,10 @@ public class Basket {
         return productCarts.size();
     }
 
+    public boolean isEmpty() {
+        return productCarts.isEmpty();
+    }
+
     public BasketDto toBasketDto() {
         List<ProductCart.ProductCartDto> prodCartsDto = productCarts.stream()
                 .map(ProductCart::toProductCartDto)
@@ -83,15 +117,12 @@ public class Basket {
         return new BasketDto(user.getUserId(), prodCartsDto, toPay);
     }
 
+    @NoArgsConstructor
     @Data
     @AllArgsConstructor
     public static class BasketDto {
         private long userId;
         private List<ProductCart.ProductCartDto> productCarts;
         private int toPay;
-
-        public BasketDto() {
-
-        }
     }
 }

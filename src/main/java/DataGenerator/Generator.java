@@ -1,11 +1,14 @@
 package DataGenerator;
 
 import com.github.javafaker.Faker;
+import pl.adrianstypinski.onlinestore.datamodel.basket.Basket;
+import pl.adrianstypinski.onlinestore.datamodel.product.ProductCart;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductItem;
 import pl.adrianstypinski.onlinestore.datamodel.user.User;
 import pl.adrianstypinski.onlinestore.datamodel.user.UserAddress;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,5 +57,30 @@ public class Generator {
         });
 
         return items;
+    }
+
+    public static Basket createFakeBasket() {
+        User user = new User();
+        user.setUserId(10000223);
+
+        Basket basket = new Basket();
+        basket.setUser(user);
+
+        ProductItem productItem1 = new ProductItem();
+        productItem1.setProductId(1000002223);
+
+        ProductItem productItem2 = new ProductItem();
+        productItem2.setProductId(1000002224);
+
+        ProductItem productItem3 = new ProductItem();
+        productItem3.setProductId(1000002225);
+
+        ProductCart productCart1 = new ProductCart(productItem1, 1);
+        ProductCart productCart2 = new ProductCart(productItem2, 2);
+        ProductCart productCart3 = new ProductCart(productItem3, 3);
+
+        basket.addProducts(Arrays.asList(productCart1, productCart2, productCart3));
+
+        return basket;
     }
 }

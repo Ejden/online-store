@@ -3,6 +3,7 @@ package pl.adrianstypinski.onlinestore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import pl.adrianstypinski.onlinestore.datamodel.basket.Basket;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductCart;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductItem;
 import pl.adrianstypinski.onlinestore.datamodel.user.User;

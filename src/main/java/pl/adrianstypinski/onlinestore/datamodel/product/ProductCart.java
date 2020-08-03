@@ -1,11 +1,27 @@
 package pl.adrianstypinski.onlinestore.datamodel.product;
 
 import lombok.Data;
+import pl.adrianstypinski.onlinestore.datamodel.basket.Basket;
 
+import javax.persistence.*;
+import java.util.UUID;
+
+@Entity
+@Data
 public class ProductCart {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID privateId;
+
+    @ManyToOne
+    private Basket basket;
+    @ManyToOne
     private ProductItem productItem;
     private int quantity;
     private int totalPrice;
+
+    public ProductCart() {
+    }
 
     public ProductCart(ProductItem productItem, int quantity) {
         this.productItem = productItem;
@@ -15,6 +31,11 @@ public class ProductCart {
 
     public void setProductItem(ProductItem productItem) {
         this.productItem = productItem;
+        calculateTotalPrice();
+    }
+
+    public void updateQuantity(int quantity) {
+        this.quantity = quantity;
         calculateTotalPrice();
     }
 
