@@ -13,4 +13,6 @@ public interface ShoppingService {
     Optional<Basket> addProductToBasket(long userId, ProductCart productCart);
 
     Optional<Basket> deleteProductFromBasket(long userId, ProductCart productCart);
+
+    Optional<Basket> updateProductInBasket(long userId, ProductCart productCart);
 }

@@ -36,4 +36,11 @@ public class ApiShoppingController {
                 .map(Basket::toBasketDto)
                 .orElse(getBasket(userId));
     }
+
+    @PutMapping("user/{userId}/basket/products")
+    public Basket.BasketDto updateProductFromBasket(@PathVariable long userId, @RequestBody ProductCart productCart) {
+        return shoppingService.updateProductInBasket(userId, productCart)
+                .map(Basket::toBasketDto)
+                .orElse(getBasket(userId));
+    }
 }

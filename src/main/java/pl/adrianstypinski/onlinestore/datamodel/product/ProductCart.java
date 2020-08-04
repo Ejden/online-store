@@ -35,7 +35,7 @@ public class ProductCart {
     }
 
     public void updateQuantity(int quantity) {
-        this.quantity = quantity;
+        this.quantity = Math.max(quantity, 0);
         calculateTotalPrice();
     }
 

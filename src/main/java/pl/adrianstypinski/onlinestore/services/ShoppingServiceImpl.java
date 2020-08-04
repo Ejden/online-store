@@ -128,9 +128,41 @@ public class ShoppingServiceImpl implements ShoppingService {
         basket.ifPresent(b -> {
             b.removeProductFromBasket(productCartFromUser.getProductItem().getProductId());
 
-            productCartDao.removeByProductItem_ProductId(productCartFromUser.getProductItem().getProductId());
+            productCartDao
+                    .removeByProductItem_ProductIdAndBasket_PrivateId(
+                            productCartFromUser.getProductItem().getProductId(),
+                            basket.get().getPrivateId());
+
             basketDao.save(basket.get());
         });
+
+        return basket;
+    }
+
+    @Override
+    public Optional<Basket> updateProductInBasket(long userId, ProductCart productCartFromUser) {
+        Optional<User> user = userDao.findByUserId(userId);
+        Optional<Basket> basket = basketDao.findByUser_UserId(userId);
+
+        basket.ifPresent(value -> value.getProductCarts().stream()
+                .filter(p -> p.getProductItem().getProductId() == productCartFromUser.getProductItem().getProductId())
+                .findFirst().ifPresent(p -> {
+                    if (productCartFromUser.getQuantity() > 0) {
+                        p.updateQuantity(productCartFromUser.getQuantity());
+                    } else {
+                        value.removeProductFromBasket(p);
+                        productCartDao
+                                .removeByProductItem_ProductIdAndBasket_PrivateId(
+                                        productCartFromUser.getProductItem().getProductId(),
+                                        basket.get().getPrivateId()
+                                );
+                    }
+
+                    basket.get().calculateToPay();
+
+                    basketDao.save(basket.get());
+                })
+        );
 
         return basket;
     }
