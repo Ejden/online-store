@@ -24,6 +24,8 @@ public interface DataService {
     // == PRODUCTS ==
     Iterable<ProductItem.ProductItemDto> getAllProductItemsBySellerId(long id);
 
+    Iterable<ProductItem.ProductItemDto> getAllProductItemsDtoByCategoryId(long categoryId, int page, int size);
+
     ProductItem saveProductItem(ProductItem productItem);
 
     Iterable<ProductItem> getAllProductItems();

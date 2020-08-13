@@ -3,14 +3,13 @@ package datagenerator;
 import com.github.javafaker.Faker;
 import pl.adrianstypinski.onlinestore.datamodel.basket.Basket;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductCart;
+import pl.adrianstypinski.onlinestore.datamodel.product.ProductCategory;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductItem;
 import pl.adrianstypinski.onlinestore.datamodel.user.User;
 import pl.adrianstypinski.onlinestore.datamodel.user.UserAddress;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Generator {
     private static final Faker faker = new Faker(Locale.UK);
@@ -41,8 +40,32 @@ public class Generator {
         return users;
     }
 
-    public static Iterable<ProductItem> createProductItems(Iterable<User> sellers) {
+    public static List<String> getListOfImgSources() {
+        return List.of(
+                "https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80",
+                "https://images.unsplash.com/photo-1447175008436-054170c2e979?ixlib=rb-1.2.1&auto=format&fit=crop&w=861&q=80",
+                "https://images.unsplash.com/photo-1561155707-3f9e6bb380b7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+                "https://images.unsplash.com/photo-1528826007177-f38517ce9a8a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=358&q=80",
+                "https://images.unsplash.com/photo-1506810487030-e7f94a5eef74?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=375&q=80"
+        );
+    }
+
+    public static List<ProductCategory> createProductCategories() {
+        return List.of(
+                new ProductCategory(0, "Vegetables And Fruits"),
+                new ProductCategory(1, "Dairy"),
+                new ProductCategory(2, "Bread"),
+                new ProductCategory(3, "Meat"),
+                new ProductCategory(4, "Beverages"),
+                new ProductCategory(5, "Manufactured Food")
+        );
+    }
+
+    public static Iterable<ProductItem> createProductItems(Iterable<User> sellers, List<ProductCategory> productCategories) {
         List<ProductItem> items = new ArrayList<>();
+        List<String> imgSources = getListOfImgSources();
+
+        AtomicInteger i = new AtomicInteger(0);
 
         sellers.forEach(seller -> {
             ProductItem productItem = new ProductItem();
@@ -52,7 +75,10 @@ public class Generator {
             productItem.setPrice(faker.number().numberBetween(1, 10000));
             productItem.addToStock(faker.number().numberBetween(0, 500));
             productItem.setSeller(seller);
+            productItem.setProductCategory(productCategories.get(i.get() % productCategories.size()));
+            productItem.setImageSource(imgSources.get(i.get() % imgSources.size()));
 
+            i.incrementAndGet();
             items.add(productItem);
         });
 

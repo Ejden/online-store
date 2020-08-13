@@ -2,6 +2,7 @@ package pl.adrianstypinski.onlinestore.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 import pl.adrianstypinski.onlinestore.services.ShoppingService;
 import pl.adrianstypinski.onlinestore.datamodel.basket.Basket;
 import pl.adrianstypinski.onlinestore.datamodel.product.ProductCart;
@@ -42,5 +43,10 @@ public class ApiShoppingController {
         return shoppingService.updateProductInBasket(userId, productCart)
                 .map(Basket::toBasketDto)
                 .orElse(getBasket(userId));
+    }
+
+    @PostMapping("user/{userId}/basket/buy")
+    public RedirectView buyAllItemsFromBasket() {
+        return new RedirectView("");
     }
 }

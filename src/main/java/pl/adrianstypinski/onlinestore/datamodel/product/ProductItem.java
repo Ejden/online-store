@@ -25,6 +25,11 @@ public class ProductItem {
     @NaturalId
     private long productId;
 
+    @ManyToOne
+    private ProductCategory productCategory;
+
+    private String imageSource;
+
     public ProductItem() {
         onStock = 0;
     }
@@ -43,6 +48,8 @@ public class ProductItem {
 
         productItemDto.setProductId(productId);
         productItemDto.setSellerId(seller.getUserId());
+        productItemDto.setCategoryName(productCategory.getCategoryName());
+        productItemDto.setImageSource(imageSource);
         productItemDto.setName(name);
         productItemDto.setDescription(description);
         productItemDto.setPrice(price);
@@ -73,6 +80,8 @@ public class ProductItem {
     public static class ProductItemDto {
         private long productId;
         private long sellerId;
+        private String categoryName;
+        private String imageSource;
         private String name;
         private String description;
         private int onStock;

@@ -42,11 +42,6 @@ public class ApiAdminController {
         return dataService.addProductItemToSeller(productItem, userId);
     }
 
-    @PostMapping("products/buy")
-    public Basket.BasketDto buy(@RequestBody Basket basket) {
-        return shoppingService.buyItemsFromBasket(basket);
-    }
-
     @PostMapping("users/products/")
     public Iterable<ProductItem.ProductItemDto> addOnStock(@RequestBody List<ProductItem> productItemsToAdd) {
         return dataService.addToStock(productItemsToAdd);
